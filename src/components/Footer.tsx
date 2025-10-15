@@ -19,8 +19,8 @@ const socialLinks = [
 
 const developers = [
     // Substitua com os nomes e links reais
-    { name: 'Seu Nome', linkedin: 'https://www.linkedin.com/in/seu-usuario/' },
-    { name: 'Nome do Colega', linkedin: 'https://www.linkedin.com/in/usuario-colega/' },
+    { name: 'Thiago Yeshua', linkedin: 'www.linkedin.com/in/thiagoyeshua' },
+    { name: 'Josué Dias', linkedin: 'https://www.linkedin.com/in/usuario-colega/' },
 ];
 
 const Footer = () => {
