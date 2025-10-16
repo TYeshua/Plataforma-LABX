@@ -21,7 +21,7 @@ const news: NewsItem[] = [
       excerpt: "Nosso projeto SmartCity AI Platform foi reconhecido como a melhor solução de IA para cidades inteligentes.",
       date: "2025-10-15",
       category: "Prêmios",
-      image: "public/labxlogo5.png",
+      image: "/labxlogo5.png",
     },
     {
       title: "Nova parceria com Google Research",

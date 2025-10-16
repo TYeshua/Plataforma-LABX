@@ -88,7 +88,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-24">
           
           <a href="#inicio" className="cursor-pointer">
-            <img src="public/labxlogo5.png" alt="LABX Logo" className="h-20 w-auto" />
+            <img src="/labxlogo5.png" alt="LABX Logo" className="h-20 w-auto" />
           </a>
 
           <nav className="hidden lg:flex space-x-6">
