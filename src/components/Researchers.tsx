@@ -4,11 +4,11 @@ import { useKeenSlider } from 'keen-slider/react';
 import { Mail, Linkedin, GraduationCap, ArrowLeft, ArrowRight, User } from 'lucide-react';
 import "keen-slider/keen-slider.min.css"; // Certifique-se de que este CSS está importado
 
-// --- Tipagem e Dados Hierárquicos (Ajustados com mais detalhes e links) ---
+// --- Tipagem e Dados Hierárquicos ---
 interface Member {
   name: string;
   role: string;
-  specialization: string; // Adicionado
+  specialization: string;
   education: string;
   image: string;
   email?: string;
@@ -50,7 +50,7 @@ const AnimatedNumber = ({ value, unit = '' }: { value: number, unit?: string }) 
   const spring = useSpring(0, { damping: 40, stiffness: 100 });
   useEffect(() => { if (isInView) spring.set(value); }, [spring, isInView, value]);
   useEffect(() => spring.on("change", (latest) => { if (ref.current) ref.current.textContent = Math.round(latest).toLocaleString('pt-BR'); }), [spring]);
-  return <span ref={ref}>{value === 0 ? '0' : ''}{unit}</span>; // Initial 0 and unit for SSR safety
+  return <>{value === 0 ? '0' : ''}<span ref={ref}></span>{unit}</>;
 };
 
 const ResearcherCard = ({ member }: { member: Member }) => (
@@ -70,31 +70,23 @@ const ResearcherCard = ({ member }: { member: Member }) => (
       <span>{member.education}</span>
     </div>
     <div className="flex items-center space-x-4 mt-auto border-t border-white/10 pt-4 w-full justify-center">
-      {member.email && (
-        <a href={`mailto:${member.email}`} className="text-gray-400 hover:text-white transition-colors">
-          <Mail size={20} />
-        </a>
-      )}
-      {member.linkedin && (
-        <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-          <Linkedin size={20} />
-        </a>
-      )}
+      {member.email && ( <a href={`mailto:${member.email}`} className="text-gray-400 hover:text-white transition-colors"><Mail size={20} /></a> )}
+      {member.linkedin && ( <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Linkedin size={20} /></a> )}
     </div>
   </motion.div>
 );
 
 const TeamCarousel = ({ title, members }: { title: string, members: Member[] }) => {
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    loop: true, // Adiciona loop para carrossel infinito
+    loop: true,
     mode: "free-snap",
+    // --- ALTERAÇÃO PRINCIPAL AQUI ---
     slides: {
-      perView: 'auto',
-      spacing: 24,
+      perView: 2, // Por padrão (mobile), exibe 2 membros
+      spacing: 16, // Espaçamento menor para telas pequenas
     },
-    breakpoints: {
-      '(min-width: 640px)': { slides: { perView: 2, spacing: 24 } },
-      '(min-width: 1024px)': { slides: { perView: 3, spacing: 32 } },
+    breakpoints: { // Mantém o comportamento para telas maiores (PC)
+      '(min-width: 768px)': { slides: { perView: 3, spacing: 24 } },
       '(min-width: 1280px)': { slides: { perView: 4, spacing: 32 } },
     }
   });
@@ -104,24 +96,13 @@ const TeamCarousel = ({ title, members }: { title: string, members: Member[] }) 
       <div className="flex justify-between items-center mb-8">
         <motion.h3 className="text-3xl md:text-4xl font-extrabold text-white" variants={itemVariants}>{title}</motion.h3>
         <motion.div className="flex gap-4" variants={itemVariants}>
-          <button 
-            onClick={() => instanceRef.current?.prev()} 
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-cyan-500 hover:text-black transition-all duration-300 shadow-md"
-            aria-label="Anterior"
-          >
-            <ArrowLeft size={20}/>
-          </button>
-          <button 
-            onClick={() => instanceRef.current?.next()} 
-            className="p-3 rounded-full bg-white/10 text-white hover:bg-cyan-500 hover:text-black transition-all duration-300 shadow-md"
-            aria-label="Próximo"
-          >
-            <ArrowRight size={20}/>
-          </button>
+          <button onClick={() => instanceRef.current?.prev()} className="p-3 rounded-full bg-white/10 text-white hover:bg-cyan-500 hover:text-black transition-all duration-300 shadow-md" aria-label="Anterior"><ArrowLeft size={20}/></button>
+          <button onClick={() => instanceRef.current?.next()} className="p-3 rounded-full bg-white/10 text-white hover:bg-cyan-500 hover:text-black transition-all duration-300 shadow-md" aria-label="Próximo"><ArrowRight size={20}/></button>
         </motion.div>
       </div>
       <div ref={sliderRef} className="keen-slider">
         {members.map((member) => (
+          // --- REMOÇÃO DO 'STYLE' FIXO AQUI ---
           <div key={member.name} className="keen-slider__slide">
             <ResearcherCard member={member} />
           </div>
@@ -131,7 +112,6 @@ const TeamCarousel = ({ title, members }: { title: string, members: Member[] }) 
   );
 };
 
-
 // --- Animações Gerais ---
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
 const itemVariants = { hidden: { y: 30, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: 'easeOut' } } };
@@ -140,20 +120,14 @@ const itemVariants = { hidden: { y: 30, opacity: 0 }, visible: { y: 0, opacity: 
 const Researchers = () => {
   return (
     <section id="equipe" className="py-24 bg-black text-white relative overflow-hidden">
-      {/* Background Pattern */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808009_1px,transparent_1px),linear-gradient(to_bottom,#80808009_1px,transparent_1px)] bg-[size:36px_36px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div className="text-center mb-16" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={containerVariants}>
-          <motion.h2 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight" variants={itemVariants}>
-            Conheça Nossa <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">Equipe</span> de Inovadores
-          </motion.h2>
-          <motion.p className="text-xl text-gray-300 max-w-3xl mx-auto" variants={itemVariants}>
-            Nossos talentos impulsionam a pesquisa e o desenvolvimento, moldando o futuro da tecnologia.
-          </motion.p>
+          <motion.h2 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight" variants={itemVariants}>Conheça Nossa <span className="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">Equipe</span> de Inovadores</motion.h2>
+          <motion.p className="text-xl text-gray-300 max-w-3xl mx-auto" variants={itemVariants}>Nossos talentos impulsionam a pesquisa e o desenvolvimento, moldando o futuro da tecnologia.</motion.p>
         </motion.div>
 
-        {/* Team Statistics */}
         <motion.div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={containerVariants}>
           {teamStats.map((stat) => (
             <motion.div key={stat.label} variants={itemVariants} className="bg-gray-900/50 p-6 rounded-2xl text-center backdrop-blur-sm border border-white/10 hover:border-blue-500/50 transition-colors duration-300">
@@ -163,26 +137,18 @@ const Researchers = () => {
           ))}
         </motion.div>
 
-        {/* Carousels for each hierarchy */}
-        <div className="space-y-20"> {/* Aumenta o espaçamento entre os carrosséis */}
+        <div className="space-y-20">
           <TeamCarousel title="Coordenadores" members={team.coordenadores} />
           <TeamCarousel title="Bolsistas" members={team.bolsistas} />
           <TeamCarousel title="Voluntários" members={team.voluntarios} />
         </div>
         
-        {/* Call to Action */}
         <motion.div className="bg-gradient-to-br from-gray-900/70 to-black/70 border border-white/10 p-12 rounded-2xl text-center mt-20 backdrop-blur-md shadow-xl shadow-gray-900/30" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.7 }}>
            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Junte-se à Nossa Missão Inovadora</h3>
-          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Estamos sempre em busca de talentos excepcionais para fortalecer nossa equipe de pesquisa e inovação. Se você é apaixonado por tecnologia e quer fazer a diferença, seu lugar é aqui.
-          </p>
+          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">Estamos sempre em busca de talentos excepcionais para fortalecer nossa equipe. Se você é apaixonado por tecnologia e quer fazer a diferença, seu lugar é aqui.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-cyan-600 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-cyan-700 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2">
-              <User size={20} /> Oportunidades de Pesquisa
-            </button>
-            <button className="border border-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-white hover:text-black hover:border-white flex items-center justify-center gap-2">
-              <GraduationCap size={20} /> Programas de Pós-Graduação
-            </button>
+            <button className="bg-cyan-600 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-cyan-700 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2"><User size={20} /> Oportunidades de Pesquisa</button>
+            <button className="border border-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-white hover:text-black hover:border-white flex items-center justify-center gap-2"><GraduationCap size={20} /> Programas de Pós-Graduação</button>
           </div>
         </motion.div>
       </div>
